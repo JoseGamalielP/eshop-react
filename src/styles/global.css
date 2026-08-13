@@ -942,11 +942,16 @@ label {
 }
 
 .basket-total-preview {
-  display: flex;
-  justify-content: space-between;
+  display: grid;
   gap: 1rem;
   border-top: 1px solid rgba(128, 144, 169, 0.2);
   padding-top: 1rem;
+}
+
+.basket-total-preview span,
+.basket-total-preview strong {
+  display: flex;
+  justify-content: space-between;
 }
 
 .basket-total-preview strong {

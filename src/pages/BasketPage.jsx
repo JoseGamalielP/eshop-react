@@ -8,6 +8,8 @@ import { useBasket } from '../hooks/useBasket'
 import { createOrder } from '../services/orderService'
 import { formatCurrency } from '../utils/currency'
 
+const TAX_RATE = 0.18
+
 function createIdempotencyKey() {
   if (window.crypto?.randomUUID) {
     return window.crypto.randomUUID()
@@ -34,8 +36,9 @@ function BasketPage() {
     totalItems,
   } = useBasket()
   const items = Array.isArray(cart.items) ? cart.items : []
-  const fallbackTotal = items.reduce((total, item) => total + Number(item.price) * Number(item.quantity), 0)
-  const totalPrice = Number(cart.totalPrice ?? fallbackTotal)
+  const subtotal = items.reduce((total, item) => total + Number(item.price) * Number(item.quantity), 0)
+  const tax = Math.round(subtotal * TAX_RATE * 100) / 100
+  const totalPrice = subtotal + tax
 
   const handleClearBasket = async () => {
     const confirmed = window.confirm('Deseas vaciar todo el carrito?')
@@ -118,7 +121,9 @@ function BasketPage() {
           <div className="order-meta-grid">
             <span>Cliente: {cart.userName}</span>
             <span>Productos: {totalItems}</span>
-            <strong>Total estimado Basket: {formatCurrency(totalPrice)}</strong>
+            <span>Subtotal: {formatCurrency(subtotal)}</span>
+            <span>IVA: {formatCurrency(tax)}</span>
+            <strong>Total: {formatCurrency(totalPrice)}</strong>
           </div>
 
           <div className="checkout-review-actions">
@@ -167,8 +172,9 @@ function BasketPage() {
           <h2>No hay productos agregados</h2>
           <p>Agrega productos desde el catalogo para verlos en esta seccion.</p>
           <div className="basket-total-preview">
-            <span>Total estimado</span>
-            <strong>$0.00</strong>
+            <span>Subtotal: {formatCurrency(0)}</span>
+            <span>IVA: {formatCurrency(0)}</span>
+            <strong>Total: {formatCurrency(0)}</strong>
           </div>
         </div>
       )}
@@ -190,6 +196,8 @@ function BasketPage() {
 
           <BasketSummary
             totalItems={totalItems}
+            subtotal={subtotal}
+            tax={tax}
             totalPrice={totalPrice}
             isSaving={isSaving}
             isCheckingOut={isCheckingOut}

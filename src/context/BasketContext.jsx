@@ -76,7 +76,7 @@ function mapProductToBasketItem(product) {
 }
 
 export function BasketProvider({ children }) {
-  const [userName] = useState(getStoredUserName)
+  const [userName, setUserName] = useState(getStoredUserName)
   const [cart, setCart] = useState(() => createEmptyCart(userName))
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
@@ -268,12 +268,27 @@ export function BasketProvider({ children }) {
     }
   }
 
+  const changeUserName = (nextUserName) => {
+    const normalizedUserName = nextUserName.trim()
+
+    if (!normalizedUserName || normalizedUserName === userName) {
+      return
+    }
+
+    window.localStorage.setItem(BASKET_USER_STORAGE_KEY, normalizedUserName)
+    setCart(createEmptyCart(normalizedUserName))
+    setError('')
+    setNotification(null)
+    setUserName(normalizedUserName)
+  }
+
   const totalItems = cart.items.reduce((total, item) => total + Number(item.quantity), 0)
 
   return (
     <BasketContext.Provider
       value={{
         cart,
+        userName,
         isLoading,
         isSaving,
         error,
@@ -283,6 +298,7 @@ export function BasketProvider({ children }) {
         decreaseQuantity,
         removeProduct,
         clearBasket,
+        changeUserName,
         refreshBasket,
         totalItems,
       }}

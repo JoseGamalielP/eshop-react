@@ -6,6 +6,14 @@ function ensureCatalogApiUrl() {
   }
 }
 
+function createCatalogUrl(path) {
+  const normalizedBase = catalogApiUrl.endsWith('/') ? catalogApiUrl.slice(0, -1) : catalogApiUrl
+  const normalizedPath = path.startsWith('/') ? path : `/${path}`
+  const url = `${normalizedBase}${normalizedPath}`
+
+  return catalogApiUrl.startsWith('http') ? new URL(url) : new URL(url, window.location.origin)
+}
+
 async function readJsonResponse(response) {
   const text = await response.text()
 
@@ -52,7 +60,7 @@ export async function getProducts(
 ) {
   ensureCatalogApiUrl()
 
-  const url = new URL('/products', catalogApiUrl)
+  const url = createCatalogUrl('/products')
   url.searchParams.set('pageIndex', pageIndex)
   url.searchParams.set('pageSize', pageSize)
 
@@ -86,7 +94,7 @@ export async function getProductById(productId, signal) {
 export async function createProduct(product) {
   ensureCatalogApiUrl()
 
-  const url = new URL('/products', catalogApiUrl)
+  const url = createCatalogUrl('/products')
   const response = await requestCatalog(
     url,
     {
@@ -109,7 +117,7 @@ export async function createProduct(product) {
 export async function updateProduct(productId, product) {
   ensureCatalogApiUrl()
 
-  const url = new URL(`/products/${encodeURIComponent(productId)}`, catalogApiUrl)
+  const url = createCatalogUrl(`/products/${encodeURIComponent(productId)}`)
   const response = await requestCatalog(
     url,
     {
@@ -132,7 +140,7 @@ export async function updateProduct(productId, product) {
 export async function deleteProduct(productId) {
   ensureCatalogApiUrl()
 
-  const url = new URL(`/products/${encodeURIComponent(productId)}`, catalogApiUrl)
+  const url = createCatalogUrl(`/products/${encodeURIComponent(productId)}`)
   const response = await requestCatalog(
     url,
     {

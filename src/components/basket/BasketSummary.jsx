@@ -1,6 +1,6 @@
 import { formatCurrency } from '../../utils/currency'
 
-function BasketSummary({ totalItems, totalPrice, isSaving, onClear }) {
+function BasketSummary({ totalItems, totalPrice, isSaving, isCheckingOut, onClear, onReviewPurchase }) {
   return (
     <aside className="basket-summary">
       <h2>Resumen</h2>
@@ -12,6 +12,9 @@ function BasketSummary({ totalItems, totalPrice, isSaving, onClear }) {
         <span>Total</span>
         <strong>{formatCurrency(totalPrice)}</strong>
       </div>
+      <button type="button" className="full-width" onClick={onReviewPurchase} disabled={isSaving || isCheckingOut || totalItems === 0}>
+        Realizar compra
+      </button>
       <button type="button" className="danger-button full-width" onClick={onClear} disabled={isSaving || totalItems === 0}>
         Vaciar carrito
       </button>
